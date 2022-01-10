@@ -8,7 +8,7 @@ use rocksdb::IteratorMode::Start;
 use serde::{Serialize, Deserialize};
 use serde_json;
 
-pub const RAFT_TRUNCATED_STATE_KEY: &[u8] = &[0x03];
+use crate::storage::keys::*;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Row {

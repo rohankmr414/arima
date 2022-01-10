@@ -1,9 +1,7 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::fmt::format;
 use std::sync::Arc;
 
 use raft::eraftpb::{ConfState, Entry, HardState, Snapshot};
-use raft::{self, Error as RaftError, RaftState, Ready, Result as RaftResult, Storage as RaftStorage, StorageError};
+use raft::{self, Error as RaftError, RaftState, Result as RaftResult, Storage as RaftStorage, StorageError};
 use rocksdb::{DB, WriteOptions, Options, WriteBatch};
 use serde::{Serialize, Deserialize};
 use serde_json;

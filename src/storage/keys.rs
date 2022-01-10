@@ -3,6 +3,7 @@ use byteorder::{BigEndian, ByteOrder};
 pub const RAFT_HARD_STATE_KEY: &[u8] = &[0x01];
 pub const RAFT_CONF_STATE_KEY: &[u8] = &[0x02];
 pub const RAFT_APPLY_INDEX_KEY: &[u8] = &[0x04];
+pub const RAFT_TRUNCATED_STATE_KEY: &[u8] = &[0x03];
 
 pub const RAFT_LOG_PREFIX: u8 = 0x16;
 
