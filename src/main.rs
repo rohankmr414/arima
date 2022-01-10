@@ -1,4 +1,8 @@
 mod db;
+mod storage;
+
+#[macro_use]
+extern crate slog;
 
 fn main() {
     let db = db::dbinit::open("/tmp/rocksdb");
