@@ -1,6 +1,7 @@
 mod db;
 mod storage;
-
+mod node;
+mod config;
 #[macro_use]
 extern crate slog;
 
