@@ -1,13 +1,14 @@
 use std::sync::Arc;
-
+use rocket::http::hyper::Bytes;
 use raft::eraftpb::{ConfState, Entry, HardState, Snapshot};
 use raft::{self, Error as RaftError, RaftState, Result as RaftResult, Storage as RaftStorage, StorageError};
 use rocksdb::{DB, WriteOptions, Options, WriteBatch};
 use serde::{Serialize, Deserialize};
 use serde_json;
 use protobuf::Message;
-mod keys;
-mod util;
+
+pub mod keys;
+pub mod util;
 use keys::*;
 use util::*;
 
@@ -209,7 +210,8 @@ impl RaftStorage for ArimaStorage {
         );
 
         let data = serde_json::to_vec(&rows).unwrap();
-        snapshot.set_data(data);
+        let bytedata = Bytes::from(data);
+        snapshot.set_data(bytedata);
 
         Ok(snapshot)
     }
