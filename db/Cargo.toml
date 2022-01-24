@@ -1,9 +1,9 @@
 [package]
-edition = "2021"
-name = "arima"
-repository = "https://github.com/rohankmr414/arima"
+name = "db"
 version = "0.1.0"
+edition = "2021"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[workspaces]
-members = ["db", "store"]
+[dependencies]
+rocksdb = "0.17.0"
