@@ -11,6 +11,8 @@ type ArimaSnapshot struct {
 	Conn *badger.DB
 }
 
+// Persist should dump all necessary state to the WriteCloser 'sink',
+// and call sink.Close() when finished or call sink.Cancel() on error.
 func (snap *ArimaSnapshot) Persist(sink raft.SnapshotSink) error {
 	log.Println("Persisting snapshot")
 	_, err := snap.Conn.Backup(sink, 0)
@@ -28,6 +30,7 @@ func (snap *ArimaSnapshot) Persist(sink raft.SnapshotSink) error {
 	return nil
 }
 
+// Release is invoked when we are finished with the snapshot.
 func (snap *ArimaSnapshot) Release() {
 	log.Println("Releasing snapshot")
 }

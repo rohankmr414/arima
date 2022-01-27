@@ -33,6 +33,10 @@ func NewArimaFSM(path string) (*ArimaFSM, error) {
 	}, nil
 }
 
+// Apply log is invoked once a log entry is committed.
+// It returns a value which will be made available in the
+// ApplyFuture returned by Raft.Apply method if that
+// method was called on the same Raft node as the FSM.
 func (fsm *ArimaFSM) Apply(log *raft.Log) interface{} {
 	var data LogStruct
 	var err error
@@ -56,10 +60,15 @@ func (fsm *ArimaFSM) Apply(log *raft.Log) interface{} {
 	return nil
 }
 
+// Snapshot is used to support log compaction. This call should
+// return an FSMSnapshot which can be used to save a point-in-time snapshot of the FSM. 
 func (fsm *ArimaFSM) Snapshot() (raft.FSMSnapshot, error) {
 	return &ArimaSnapshot{Conn: fsm.Conn}, nil
 }
 
+// Restore is used to restore an FSM from a snapshot. It is not called
+// concurrently with any other command. The FSM must discard all previous
+// state.
 func (fsm *ArimaFSM) Restore(r io.ReadCloser) error {
 	err := fsm.Conn.DropAll()
 	if err != nil {
