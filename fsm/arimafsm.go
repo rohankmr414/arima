@@ -80,3 +80,19 @@ func (fsm *ArimaFSM) Restore(r io.ReadCloser) error {
 	}
 	return nil
 }
+
+func (fsm *ArimaFSM) Get(key []byte) ([]byte, error) {
+	var val []byte
+	err := fsm.Conn.View(func(txn *badger.Txn) error {
+		item, err := txn.Get(key)
+		if err != nil {
+			return err
+		}
+		val, err = item.ValueCopy(val)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
+}
