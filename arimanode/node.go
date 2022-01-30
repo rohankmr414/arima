@@ -29,7 +29,7 @@ func (n *ArimaNode) New(id string, path string, bindaddr string) (*raft.Raft, *f
 		log.Fatalln("Error resolving TCP address:", err)
 		return nil, nil, err
 	}
-
+	log.Println(bindaddr)
 	transport, err := raft.NewTCPTransport(bindaddr, addr, 3, 10*time.Second, os.Stderr)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (n *ArimaNode) New(id string, path string, bindaddr string) (*raft.Raft, *f
 	}
 
 	node.Fsm = sm
-
+	
 	rft, err := raft.NewRaft(config, sm, logstore, stablestore, snapshot, transport)
 
 	if err != nil {

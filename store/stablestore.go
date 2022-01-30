@@ -3,8 +3,12 @@ package store
 import (
 	// "log"
 	// "github.com/hashicorp/raft"
+	"errors"
+
 	"github.com/dgraph-io/badger/v3"
 )
+
+var ErrKeyNotFound = errors.New("not found")
 
 type StableStore struct {
 	Conn *badger.DB
@@ -44,7 +48,9 @@ func (store *StableStore) Get(key []byte) ([]byte, error) {
 	err := store.Conn.View(func (txn *badger.Txn) error {
 		item, err := txn.Get(key)
 		if err != nil {
-			return err
+			if err.Error() == badger.ErrKeyNotFound.Error() {
+				return ErrKeyNotFound
+			}
 		}
 		value, err = item.ValueCopy(value)
 		return err
