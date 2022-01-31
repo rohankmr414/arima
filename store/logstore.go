@@ -3,6 +3,7 @@ package store
 import (
 	"log"
 	"github.com/hashicorp/raft"
+	"github.com/rohankmr414/arima/utils"
 	"github.com/dgraph-io/badger/v3"
 )
 
@@ -40,7 +41,7 @@ func (store *LogStore) FirstIndex() (uint64, error) {
 
 		if it.Valid() {
 			item := it.Item()
-			key = bytesToUint64(item.Key()) 
+			key = utils.BytesToUint64(item.Key()) 
 		} else {
 			key = 0
 		}
@@ -71,7 +72,7 @@ func (store *LogStore) LastIndex() (uint64, error) {
 
 		if it.Valid() {
 			item := it.Item()
-			key = bytesToUint64(item.Key()) 
+			key = utils.BytesToUint64(item.Key()) 
 		} else {
 			key = 0
 		}
@@ -89,7 +90,7 @@ func (store *LogStore) LastIndex() (uint64, error) {
 
 // GetLog gets a log entry at a given index.
 func (store *LogStore) GetLog(index uint64, log *raft.Log) error {
-	key := uint64ToBytes(index)
+	key := utils.Uint64ToBytes(index)
 	var value []byte
 	err := store.Conn.View(func (txn *badger.Txn) error {
 		item, err := txn.Get(key)
@@ -104,13 +105,13 @@ func (store *LogStore) GetLog(index uint64, log *raft.Log) error {
 		return err
 	}
 
-	return decodeMsgPack(value, log)
+	return utils.DecodeMsgPack(value, log)
 }
 
 // StoreLog stores a log entry.
 func (store *LogStore) StoreLog(log *raft.Log) error {
-	key := uint64ToBytes(log.Index)
-	val, err := encodeMsgPack(log)
+	key := utils.Uint64ToBytes(log.Index)
+	val, err := utils.EncodeMsgPack(log)
 	if err != nil {
 		return err
 	}
@@ -137,7 +138,7 @@ func (store *LogStore) StoreLogs(logs []*raft.Log) error {
 
 // DeleteRange deletes a range of log entries. The range is inclusive.
 func (store *LogStore) DeleteRange(min, max uint64) error {
-	minkey := uint64ToBytes(min)
+	minkey := utils.Uint64ToBytes(min)
 
 	txn := store.Conn.NewTransaction(true)
 	defer txn.Discard()
@@ -148,7 +149,7 @@ func (store *LogStore) DeleteRange(min, max uint64) error {
 	for {
 		key := it.Item().Key()
 
-		if bytesToUint64(key) > max {
+		if utils.BytesToUint64(key) > max {
 			break
 		}
 		err := txn.Delete(key)

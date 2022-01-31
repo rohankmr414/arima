@@ -4,7 +4,7 @@ import (
 	// "log"
 	// "github.com/hashicorp/raft"
 	"errors"
-
+	"github.com/rohankmr414/arima/utils"
 	"github.com/dgraph-io/badger/v3"
 )
 
@@ -66,7 +66,7 @@ func (store *StableStore) Get(key []byte) ([]byte, error) {
 
 // SetUint64 is like Set, but handles uint64 values
 func (store *StableStore) SetUint64(key []byte, val uint64) error {
-	return store.Set(key, uint64ToBytes(val))
+	return store.Set(key, utils.Uint64ToBytes(val))
 }
 
 // GetUint64 returns the uint64 value for key, or 0 if key was not found.
@@ -75,5 +75,5 @@ func (store *StableStore) GetUint64(key []byte) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return bytesToUint64(val), nil
+	return utils.BytesToUint64(val), nil
 }

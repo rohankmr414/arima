@@ -4,17 +4,18 @@ import (
 	"io"
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
+	"github.com/rohankmr414/arima/utils"
 )
 
 type ArimaFSM struct {
 	Conn *badger.DB
 }
 
-type LogStruct struct {
-	Op  string
-	Key []byte
-	Val []byte
-}
+// type LogStruct struct {
+// 	Op  string
+// 	Key []byte
+// 	Val []byte
+// }
 
 func NewArimaFSM(path string) (*ArimaFSM, error) {
 	var err error
@@ -38,25 +39,58 @@ func NewArimaFSM(path string) (*ArimaFSM, error) {
 // ApplyFuture returned by Raft.Apply method if that
 // method was called on the same Raft node as the FSM.
 func (fsm *ArimaFSM) Apply(log *raft.Log) interface{} {
-	var data LogStruct
-	var err error
+	// var data CommandPayload
+	// var err error
 
-	err = decodeMsgPack(log.Data, &data)
-	if err != nil {
-		return err
+	// err = decodeMsgPack(log.Data, &data)
+	// if err != nil {
+	// 	return err
+	// }
+	// if data.Operation == "set" {
+	// 	err = fsm.Conn.Update(func(txn *badger.Txn) error {
+	// 		return txn.Set(data.Key, data.Value)
+	// 	})
+	// } else if data.Operation == "delete" {
+	// 	err = fsm.Conn.Update(func(txn *badger.Txn) error {
+	// 		return txn.Delete(data.Key)
+	// 	})
+	// }
+	// if err != nil {
+	// 	return err
+	// }
+	// return nil
+	switch log.Type {
+	case raft.LogCommand:
+		var payload CommandPayload
+		if err := utils.DecodeMsgPack(log.Data, &payload); err != nil {
+			return err
+		}
+		if payload.Operation == "set" {
+			return &ApplyResponse{
+				Error: fsm.Conn.Update(func(txn *badger.Txn) error {
+					return txn.Set(payload.Key, payload.Value)
+				}),
+				Data: payload.Value,
+			}
+		} else if payload.Operation == "delete" {
+			return &ApplyResponse{
+				Error: fsm.Conn.Update(func(txn *badger.Txn) error {
+					return txn.Delete(payload.Key)
+				}),
+				Data: nil,
+			}
+		} else if payload.Operation == "get" {
+			data, err := fsm.Get(payload.Key)
+			if err != nil {
+				return &ApplyResponse{
+					Error: err,
+					Data:  data,
+				}
+			}
+		}
 	}
-	if data.Op == "set" {
-		err = fsm.Conn.Update(func(txn *badger.Txn) error {
-			return txn.Set(data.Key, data.Val)
-		})
-	} else if data.Op == "delete" {
-		err = fsm.Conn.Update(func(txn *badger.Txn) error {
-			return txn.Delete(data.Key)
-		})
-	}
-	if err != nil {
-		return err
-	}
+
+	
 	return nil
 }
 

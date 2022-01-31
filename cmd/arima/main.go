@@ -1,91 +1,151 @@
 package main
 
 import (
-	"os"
+	"fmt"
+	"github.com/hashicorp/raft"
+	"github.com/rohankmr414/arima/fsm"
+	"github.com/rohankmr414/arima/server"
+	"github.com/rohankmr414/arima/store"
+	"github.com/spf13/viper"
 	"log"
-	// "github.com/rohankmr414/arima/arimanode"
-	"github.com/urfave/cli/v2"
-	"github.com/google/uuid"
+	"net"
+	"os"
+	"path/filepath"
+	"time"
 )
 
-type NodeConf struct {
-	Id string
-	BindAddr string
-	Path string
-	IsLeader bool
+// configRaft configuration for raft node
+type configRaft struct {
+	NodeId    string `mapstructure:"node_id"`
+	Port      int    `mapstructure:"port"`
+	VolumeDir string `mapstructure:"volume_dir"`
 }
 
-var nconf NodeConf
-
-var path string
-// var rn string
-
-func Init() {
-	nconf.Id = uuid.New().String()
-	var err error
-	nconf.Path, err = os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
-	}
+// configServer configuration for HTTP server
+type configServer struct {
+	Port int `mapstructure:"port"`
 }
 
+// config configuration
+type config struct {
+	Server configServer `mapstructure:"server"`
+	Raft   configRaft   `mapstructure:"raft"`
+}
+
+const (
+	serverPort = "SERVER_PORT"
+
+	raftNodeId = "RAFT_NODE_ID"
+	raftPort   = "RAFT_PORT"
+	raftVolDir = "RAFT_VOL_DIR"
+)
+
+var confKeys = []string{
+	serverPort,
+
+	raftNodeId,
+	raftPort,
+	raftVolDir,
+}
+
+const (
+	// The maxPool controls how many connections we will pool.
+	maxPool = 3
+
+	// The timeout is used to apply I/O deadlines. For InstallSnapshot, we multiply
+	// the timeout by (SnapshotSize / TimeoutScale).
+	// https://github.com/hashicorp/raft/blob/v1.1.2/net_transport.go#L177-L181
+	tcpTimeout = 10 * time.Second
+
+	// The `retain` parameter controls how many
+	// snapshots are retained. Must be at least 1.
+	raftSnapShotRetain = 2
+)
 
 
 func main() {
-	app := cli.App{}
-	app.Name = "arima"
-	app.Usage = "A fault tolerant key value store using raft"
-	app.Commands = []*cli.Command{
-		{
-			Name: "start",
-			Usage: "Start a new arima node",
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name: "path",
-					Usage: "Path to store the data",
-					Required: true,
-					Value: path + "/arimatest",
-					Aliases: []string{"p"},
-					Destination: &nconf.Path,
-				},
-				&cli.StringFlag{
-					Name: "address",
-					Usage: "Address to bind to",
-					Required: true,
-					Aliases: []string{"a"},
-					Destination: &nconf.BindAddr,
-				},
-				// &cli.StringFlag{
-				// 	Name: "raft-address",
-				// 	Usage: "Peer address to connect to",
-				// 	Required: false,
-				// 	Aliases: []string{"r"},
-				// 	Destination: &rn,
-				// },
-			},
-			Action: func(c *cli.Context) error {
-				// Init()
-				nconf.Id = uuid.New().String()
-				startnode()
-				return nil
-			},
-		},
-		// {
-		// 	Name: "get",
-		// 	Usage: "Get a value from the store",
-		// 	Flags: []cli.Flag{
-		// 		&cli.StringFlag{
-		// 			Name: "key",
-		// 			Usage: "Key to get",
-		// 			Required: true,
-		// 			Aliases: []string{"k"},
-		// 		}
-		// 	}
+	var v = viper.New()
+	v.AutomaticEnv()
 
-		// },
+	if err := v.BindEnv(confKeys...); err != nil {
+		log.Fatal(err)
+		return
 	}
-	err := app.Run(os.Args)
+
+	conf := config{
+		Server: configServer{
+			Port: v.GetInt(serverPort),
+		},
+		Raft: configRaft{
+			NodeId:    v.GetString(raftNodeId),
+			Port:      v.GetInt(raftPort),
+			VolumeDir: v.GetString(raftVolDir),
+		},
+	}
+
+	log.Printf("%+v\n", conf)
+
+	var raftBindAddr = fmt.Sprintf("localhost:%d", conf.Raft.Port)
+
+	raftConf := raft.DefaultConfig()
+	raftConf.LocalID = raft.ServerID(conf.Raft.NodeId)
+	
+	arimaFsm, err := fsm.NewArimaFSM(conf.Raft.VolumeDir)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	arimaLogStore, err := store.NewLogStore(filepath.Join(conf.Raft.VolumeDir, "log"))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	arimaStableStore, err := store.NewStableStore(filepath.Join(conf.Raft.VolumeDir, "stable"))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	arimaSnapshotStore, err := raft.NewFileSnapshotStore(conf.Raft.VolumeDir, raftSnapShotRetain, os.Stdout)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	tcpAddr, err := net.ResolveTCPAddr("tcp", raftBindAddr)
+	if err != nil {
+		log.Fatalln("Error resolving TCP address:", err)
+		return
+	}
+
+	transport, err := raft.NewTCPTransport(raftBindAddr, tcpAddr, maxPool, tcpTimeout, os.Stdout)
+	if err != nil {
+		log.Fatalln("Error creating TCP transport:", err)
+		return
+	}
+
+	raftServer, err := raft.NewRaft(raftConf, arimaFsm, arimaLogStore, arimaStableStore, arimaSnapshotStore, transport)
 	if err != nil {
 		log.Fatal(err)
+		return
+	}
+
+	// always start single server as a leader
+	configuration := raft.Configuration{
+		Servers: []raft.Server{
+			{
+				ID:      raft.ServerID(conf.Raft.NodeId),
+				Address: transport.LocalAddr(),
+			},
+		},
+	}
+
+	raftServer.BootstrapCluster(configuration)
+
+	srv := server.New(fmt.Sprintf(":%d", conf.Server.Port), arimaFsm.Conn, raftServer)
+	if err := srv.Start(); err != nil {
+		log.Fatalln("failed to start server:", err)
 	}
 }
