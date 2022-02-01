@@ -24,6 +24,7 @@ cd arima
 ```
 2. Build the binary
 ```
+go mod download
 go build ./cmd/arima
 sudo mv ./arima /usr/local/bin/
 ```
@@ -127,7 +128,7 @@ Each node exposes following endpoints:
     * Request:
         ```json
         {
-            "key": "key",
+            "key":   "key",
             "value": "value" 
         }
         ```
@@ -135,7 +136,7 @@ Each node exposes following endpoints:
         ```json
         {
             "data": {
-                "key": "key",
+                "key":   "key",
                 "value": "value" 
             },
             "message": "success fetching data"
@@ -148,7 +149,7 @@ Each node exposes following endpoints:
         ```json
         {
             "data": {
-                "key": "key",
+                "key":  "key",
                 "value": null
             },
             "message": "success removing data"
