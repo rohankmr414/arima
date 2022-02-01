@@ -13,8 +13,8 @@ import (
 )
 
 type requestSet struct {
-	Key   []byte
-	Value []byte 
+	Key   string
+	Value string
 }
 
 // Store handling save to raft cluster. Store will invoke raft.Apply to make this stored in all cluster
@@ -32,7 +32,9 @@ func (h handler) Set(eCtx echo.Context) error {
 	// 		"error": "key is empty",
 	// 	})
 	// }
+	
 
+	
 	if h.raft.State() != raft.Leader {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": "not the leader",
@@ -41,8 +43,8 @@ func (h handler) Set(eCtx echo.Context) error {
 
 	payload := fsm.CommandPayload{
 		Operation: "set",
-		Key:       form.Key,
-		Value:     form.Value,
+		Key:       []byte(form.Key),
+		Value:     []byte(form.Value),
 	}
 
 	data, err := utils.EncodeMsgPack(payload)

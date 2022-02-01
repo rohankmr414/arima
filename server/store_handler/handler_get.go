@@ -4,7 +4,7 @@ import (
 	// "encoding/json"
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/rohankmr414/arima/utils"
+	// "github.com/rohankmr414/arima/utils"
 	"net/http"
 	"strings"
 )
@@ -45,9 +45,7 @@ func (h handler) Get(eCtx echo.Context) error {
 		})
 	}
 
-	var data interface{}
-	
-	err = utils.DecodeMsgPack(value, &data)
+	data := string(value)
 	
 
 	if err != nil {
