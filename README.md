@@ -15,7 +15,7 @@ It also provides a simple HTTP API for accessing the data.
 <br>
 
 ## Installation
----
+
 
 ### From Source
 1. Clone the repository
@@ -33,7 +33,7 @@ This will build the `arima` binary and place it in the `/usr/local/bin` director
 <br>
 
 ## Usage
----
+
 ```
 $ arima --help
 NAME:
@@ -56,7 +56,7 @@ GLOBAL OPTIONS:
 <br>
 
 ## Running a node
----
+
 ```
 $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/arima/n1
 ```
@@ -64,7 +64,7 @@ $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/a
 <br>
 
 ## Settting up a cluster
----
+
 * Run multiple nodes.
     ```
     $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/arima/n1
