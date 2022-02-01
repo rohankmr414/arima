@@ -47,7 +47,8 @@ var volumedir string
 func main() {
 	app := &cli.App{
 		Name:                 "arima",
-		Description:          "A simple fault-tolerant key-value store",
+		Usage:                "A simple fault tolerant key-value store",
+		Description:          "A distributed fault-tolerant key-value store which uses Raft for consensus.",
 		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			{
