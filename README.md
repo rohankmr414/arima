@@ -70,7 +70,7 @@ $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/a
     $ arima run --server-port 2222 --node-id n2 --raft-port 1112 --volume-dir /tmp/arima/n2
     $ arima run --server-port 2223 --node-id n3 --raft-port 1113 --volume-dir /tmp/arima/n3
     ```
-    Each node will be initialized as a leader. We'll have to connect the nodes to form a cluster. \
+    Each node will be initialized as a leader. We'll have to connect the nodes to form a cluster.
 
 * Connect the nodes to form a cluster.
 
