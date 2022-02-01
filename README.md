@@ -8,7 +8,7 @@
 ```
 A distributed, fault-tolerant key-value store. 
 
-The data is persisted on the disk using BadgerDB. Replication and fault-tolerance is achieved using Raft.
+The data is persisted on the disk using [BadgerDB](https://github.com/dgraph-io/badger). Replication and fault-tolerance is achieved using [Raft](https://raft.github.io).
 
 It also provides a simple HTTP API for accessing the data.
 
