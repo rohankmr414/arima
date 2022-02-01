@@ -1,10 +1,10 @@
 package store
 
 import (
-	"log"
+	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
 	"github.com/rohankmr414/arima/utils"
-	"github.com/dgraph-io/badger/v3"
+	"log"
 )
 
 type LogStore struct {
@@ -41,11 +41,10 @@ func (store *LogStore) FirstIndex() (uint64, error) {
 
 		if it.Valid() {
 			item := it.Item()
-			key = utils.BytesToUint64(item.Key()) 
+			key = utils.BytesToUint64(item.Key())
 		} else {
 			key = 0
 		}
-
 
 		return nil
 	})
@@ -72,7 +71,7 @@ func (store *LogStore) LastIndex() (uint64, error) {
 
 		if it.Valid() {
 			item := it.Item()
-			key = utils.BytesToUint64(item.Key()) 
+			key = utils.BytesToUint64(item.Key())
 		} else {
 			key = 0
 		}
@@ -92,11 +91,11 @@ func (store *LogStore) LastIndex() (uint64, error) {
 func (store *LogStore) GetLog(index uint64, log *raft.Log) error {
 	key := utils.Uint64ToBytes(index)
 	var value []byte
-	err := store.Conn.View(func (txn *badger.Txn) error {
+	err := store.Conn.View(func(txn *badger.Txn) error {
 		item, err := txn.Get(key)
 		if err != nil {
 			return err
-		} 
+		}
 		value, err = item.ValueCopy(value)
 		return err
 	})
@@ -115,7 +114,7 @@ func (store *LogStore) StoreLog(log *raft.Log) error {
 	if err != nil {
 		return err
 	}
-	storeerr := store.Conn.Update(func (txn *badger.Txn) error {
+	storeerr := store.Conn.Update(func(txn *badger.Txn) error {
 		err := txn.Set(key, val.Bytes())
 		if err != nil {
 			return err

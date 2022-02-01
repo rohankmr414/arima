@@ -1,10 +1,8 @@
 package store_handler
 
 import (
-	// "encoding/json"
 	"fmt"
 	"github.com/labstack/echo/v4"
-	// "github.com/rohankmr414/arima/utils"
 	"net/http"
 	"strings"
 )
@@ -46,7 +44,6 @@ func (h handler) Get(eCtx echo.Context) error {
 	}
 
 	data := string(value)
-	
 
 	if err != nil {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{

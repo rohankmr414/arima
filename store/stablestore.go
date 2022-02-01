@@ -1,11 +1,9 @@
 package store
 
 import (
-	// "log"
-	// "github.com/hashicorp/raft"
 	"errors"
-	"github.com/rohankmr414/arima/utils"
 	"github.com/dgraph-io/badger/v3"
+	"github.com/rohankmr414/arima/utils"
 )
 
 var ErrKeyNotFound = errors.New("not found")
@@ -33,7 +31,7 @@ func NewStableStore(path string) (*StableStore, error) {
 
 // Set is used to set a key/value set
 func (store *StableStore) Set(key []byte, val []byte) error {
-	return store.Conn.Update(func (txn *badger.Txn) error {
+	return store.Conn.Update(func(txn *badger.Txn) error {
 		err := txn.Set(key, val)
 		if err != nil {
 			return err
@@ -45,7 +43,7 @@ func (store *StableStore) Set(key []byte, val []byte) error {
 // Get returns the value for key, or an empty byte slice if key was not found.
 func (store *StableStore) Get(key []byte) ([]byte, error) {
 	var value []byte
-	err := store.Conn.View(func (txn *badger.Txn) error {
+	err := store.Conn.View(func(txn *badger.Txn) error {
 		item, err := txn.Get(key)
 		if err != nil {
 			if err.Error() == badger.ErrKeyNotFound.Error() {
@@ -55,7 +53,7 @@ func (store *StableStore) Get(key []byte) ([]byte, error) {
 		value, err = item.ValueCopy(value)
 		return err
 	})
-	
+
 	if err != nil {
 		val := []byte{}
 		return val, err

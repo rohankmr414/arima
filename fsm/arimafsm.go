@@ -1,10 +1,10 @@
 package fsm
 
 import (
-	"io"
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
 	"github.com/rohankmr414/arima/utils"
+	"io"
 )
 
 type ArimaFSM struct {
@@ -90,12 +90,11 @@ func (fsm *ArimaFSM) Apply(log *raft.Log) interface{} {
 		}
 	}
 
-	
 	return nil
 }
 
 // Snapshot is used to support log compaction. This call should
-// return an FSMSnapshot which can be used to save a point-in-time snapshot of the FSM. 
+// return an FSMSnapshot which can be used to save a point-in-time snapshot of the FSM.
 func (fsm *ArimaFSM) Snapshot() (raft.FSMSnapshot, error) {
 	return &ArimaSnapshot{Conn: fsm.Conn}, nil
 }

@@ -2,13 +2,11 @@ package store_handler
 
 import (
 	"fmt"
-	// "encoding/json"
-	"github.com/rohankmr414/arima/utils"
-	"github.com/rohankmr414/arima/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
+	"github.com/rohankmr414/arima/fsm"
+	"github.com/rohankmr414/arima/utils"
 	"net/http"
-	// "strings"
 	"time"
 )
 
@@ -32,9 +30,7 @@ func (h handler) Set(eCtx echo.Context) error {
 	// 		"error": "key is empty",
 	// 	})
 	// }
-	
 
-	
 	if h.raft.State() != raft.Leader {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": "not the leader",
