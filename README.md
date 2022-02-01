@@ -104,55 +104,55 @@ $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/a
 
     <br>
 
-    ## Reading and Writing Data
-    Once the cluster is formed, we can start sending HTTP requests to the leader node to read, write and delete key-value pairs.
+## Reading and Writing Data
+Once the cluster is formed, we can start sending HTTP requests to the leader node to read, write and delete key-value pairs.
 
-    We can read the data from any node in the cluster.
+We can read the data from any node in the cluster.
 
-    Each node exposes following endpoints:
+Each node exposes following endpoints:
 
-    * URL: `/store/:key`
-        * Method: `GET`
-        * Response: `200`
-            ```json
-            {
-                "data": {
-                    "key":   "key",
-                    "value": "value"
-		        },
-                "message": "success fetching data"
-            }
-            ```
-    * URL: `/store/`
-        * Method: `POST`
-        * Request:
-            ```json
-            {
+* URL: `/store/:key`
+    * Method: `GET`
+    * Response: `200`
+        ```json
+        {
+            "data": {
+                "key":   "key",
+                "value": "value"
+		    },
+            "message": "success fetching data"
+        }
+        ```
+* URL: `/store/`
+    * Method: `POST`
+    * Request:
+        ```json
+        {
+            "key": "key",
+            "value": "value" 
+        }
+        ```
+    * Response: `200`
+        ```json
+        {
+            "data": {
                 "key": "key",
                 "value": "value" 
-            }
-            ```
-        * Response: `200`
-            ```json
-            {
-                "data": {
-                    "key": "key",
-                    "value": "value" 
-                },
-                "message": "success fetching data"
-            }
-            ```
+            },
+            "message": "success fetching data"
+        }
+        ```
 
-    * URL: `/store/:key`
-        * Method: `DELETE`
-        * Response: `200`
-            ```json
-            {
-                "data": {
-                    "key": "key",
-                    "value": null
-                },
-                "message": "success removing data"
-            }
-            ```
+* URL: `/store/:key`
+    * Method: `DELETE`
+    * Response: `200`
+        ```json
+        {
+            "data": {
+                "key": "key",
+                "value": null
+            },
+            "message": "success removing data"
+        }
+        ```
 
