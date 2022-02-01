@@ -25,11 +25,11 @@ func (h handler) Set(eCtx echo.Context) error {
 		})
 	}
 
-	// if form.Key == "" {
-	// 	return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
-	// 		"error": "key is empty",
-	// 	})
-	// }
+	if form.Key == "" {
+		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
+			"error": "key is empty",
+		})
+	}
 
 	if h.raft.State() != raft.Leader {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
