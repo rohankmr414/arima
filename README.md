@@ -118,7 +118,7 @@ $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/a
             {
                 "data": {
                     "key":   "key",
-                    "value": "data"
+                    "value": "value"
 		        },
                 "message": "success fetching data"
             }
