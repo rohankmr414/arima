@@ -1,11 +1,6 @@
-```
-             _                 
-   __ _ _ __(_)_ __ ___   __ _ 
-  / _` | '__| | '_ ` _ \ / _` |
- | (_| | |  | | | | | | | (_| |
-  \__,_|_|  |_|_| |_| |_|\__,_|
-                               
-```
+
+![](./logo.png)
+
 A distributed, fault-tolerant key-value store. 
 
 The data is persisted on the disk using [BadgerDB](https://github.com/dgraph-io/badger). Replication and fault-tolerance is achieved using [Raft](https://raft.github.io).
