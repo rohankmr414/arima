@@ -48,48 +48,56 @@ func main() {
 	app := &cli.App{
 		Name:  "arima",
 		Description: "A simple fault-tolerant key-value store",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name: "server-port",
-				Value: "8080",
-				Usage: "The port to listen on for HTTP requests",
-				Required: true,
-				Aliases: []string{"s"},
-				Destination: &svport,
-			},
-			&cli.StringFlag{
-				Name: "node-id",
-				Value: "",
-				Usage: "The raft node id",
-				Required: true,
-				Aliases: []string{"i"},
-				Destination: &nodeid,
-			},
-			&cli.StringFlag{
-				Name: "raft-port",
-				Value: "9081",
-				Usage: "The port to listen on for raft requests",
-				Required: true,
+		EnableBashCompletion: true,
+		Commands: []*cli.Command{
+			{
+				Name:    "run",
+				Usage:  "Run the server",
 				Aliases: []string{"r"},
-				Destination: &raftport,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "server-port",
+						Value: "",
+						Usage: "The port to listen on for HTTP requests",
+						Required: true,
+						Aliases: []string{"s"},
+						Destination: &svport,
+					},
+					&cli.StringFlag{
+						Name: "node-id",
+						Value: "",
+						Usage: "The raft node id",
+						Required: true,
+						Aliases: []string{"i"},
+						Destination: &nodeid,
+					},
+					&cli.StringFlag{
+						Name: "raft-port",
+						Value: "",
+						Usage: "The port to listen on for raft requests",
+						Required: true,
+						Aliases: []string{"r"},
+						Destination: &raftport,
+					},
+					&cli.PathFlag{
+						Name: "volume-dir",
+						Value: "",
+						Usage: "The directory to store the data",
+						Required: true,
+						Aliases: []string{"v"},
+						Destination: &volumedir,
+					},
+				},
+				Action: func(c *cli.Context) error {
+					fmt.Println("Starting arima")
+					err := startNode(svport, raftport, nodeid, volumedir)
+					if err != nil {
+						log.Fatal(err)
+						return err
+					}
+					return nil
+				},
 			},
-			&cli.PathFlag{
-				Name: "raft-volume-dir",
-				Value: "",
-				Usage: "The directory to store the data",
-				Required: true,
-				Aliases: []string{"v"},
-				Destination: &volumedir,
-			},
-		},
-		Action: func(c *cli.Context) error {
-			fmt.Println("Starting arima")
-			err := startNode(svport, raftport, nodeid, volumedir)
-			if err != nil {
-				log.Fatal(err)
-				return err
-			}
-			return nil
 		},
 	}
 	err := app.Run(os.Args)
