@@ -1,6 +1,9 @@
 <br>
 
-![](./logo.png)
+<p align="center">
+  <img src="./logo.png" />
+</p>
+<br>
 
 A distributed, fault-tolerant key-value store. 
 
