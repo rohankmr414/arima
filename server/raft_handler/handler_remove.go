@@ -9,7 +9,7 @@ import (
 
 // requestRemove request payload for removing node from raft cluster
 type requestRemove struct {
-	NodeID string
+	NodeID string `json:"node_id"`
 }
 
 // RemoveRaftHandler handling removing raft

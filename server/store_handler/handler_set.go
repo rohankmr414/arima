@@ -11,8 +11,8 @@ import (
 )
 
 type requestSet struct {
-	Key   string
-	Value string
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 // Store handling save to raft cluster. Store will invoke raft.Apply to make this stored in all cluster

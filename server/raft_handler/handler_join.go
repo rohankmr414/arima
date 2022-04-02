@@ -9,8 +9,8 @@ import (
 
 // requestJoin request payload for joining raft cluster
 type requestJoin struct {
-	NodeID      string
-	RaftAddress string
+	NodeID      string `json:"node_id"`
+	RaftAddress string `json:"raft_address"`
 }
 
 // JoinRaftHandler handling join raft
