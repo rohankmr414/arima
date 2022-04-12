@@ -2,6 +2,7 @@ package store
 
 import (
 	"errors"
+
 	"github.com/dgraph-io/badger/v3"
 	"github.com/rohankmr414/arima/utils"
 )
@@ -30,7 +31,7 @@ func NewStableStore(path string) (*StableStore, error) {
 }
 
 // Set is used to set a key/value set
-func (store *StableStore) Set(key []byte, val []byte) error {
+func (store *StableStore) Set(key, val []byte) error {
 	return store.Conn.Update(func(txn *badger.Txn) error {
 		err := txn.Set(key, val)
 		if err != nil {
