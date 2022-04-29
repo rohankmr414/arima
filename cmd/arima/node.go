@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/hashicorp/raft"
-	"github.com/rohankmr414/arima/fsm"
-	"github.com/rohankmr414/arima/server"
-	"github.com/rohankmr414/arima/store"
 	"log"
 	"net"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/hashicorp/raft"
+	"github.com/rohankmr414/arima/fsm"
+	"github.com/rohankmr414/arima/server"
+	"github.com/rohankmr414/arima/store"
 )
 
 func startNode(svport, raftport, nodeid, volumedir string) error {
@@ -39,7 +40,7 @@ func startNode(svport, raftport, nodeid, volumedir string) error {
 
 	log.Printf("%+v\n", conf)
 
-	var raftBindAddr = fmt.Sprintf("localhost:%d", conf.Raft.Port)
+	raftBindAddr := fmt.Sprintf("localhost:%d", conf.Raft.Port)
 
 	raftConf := raft.DefaultConfig()
 	raftConf.LocalID = raft.ServerID(conf.Raft.NodeId)

@@ -2,12 +2,13 @@ package store_handler
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
 	"github.com/rohankmr414/arima/fsm"
 	"github.com/rohankmr414/arima/utils"
-	"net/http"
-	"time"
 )
 
 type requestSet struct {
@@ -18,7 +19,7 @@ type requestSet struct {
 // Store handling save to raft cluster. Store will invoke raft.Apply to make this stored in all cluster
 // with acknowledge from n quorum. Store must be done in raft leader, otherwise return error.
 func (h handler) Set(eCtx echo.Context) error {
-	var form = requestSet{}
+	form := requestSet{}
 	if err := eCtx.Bind(&form); err != nil {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": fmt.Sprintf("error binding: %s", err.Error()),

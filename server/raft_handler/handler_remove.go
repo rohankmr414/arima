@@ -2,9 +2,10 @@ package raft_handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 // requestRemove request payload for removing node from raft cluster
@@ -14,14 +15,14 @@ type requestRemove struct {
 
 // RemoveRaftHandler handling removing raft
 func (h handler) RemoveRaftHandler(eCtx echo.Context) error {
-	var form = requestRemove{}
+	form := requestRemove{}
 	if err := eCtx.Bind(&form); err != nil {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": fmt.Sprintf("error binding: %s", err.Error()),
 		})
 	}
 
-	var nodeID = form.NodeID
+	nodeID := form.NodeID
 
 	if h.raft.State() != raft.Leader {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{

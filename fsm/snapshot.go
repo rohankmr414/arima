@@ -16,7 +16,6 @@ type ArimaSnapshot struct {
 func (snap *ArimaSnapshot) Persist(sink raft.SnapshotSink) error {
 	log.Println("Persisting snapshot")
 	_, err := snap.Conn.Backup(sink, 0)
-
 	if err != nil {
 		log.Fatalln("Error persisting snapshot:", err)
 		return err

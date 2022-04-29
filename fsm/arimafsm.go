@@ -1,10 +1,11 @@
 package fsm
 
 import (
+	"io"
+
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
 	"github.com/rohankmr414/arima/utils"
-	"io"
 )
 
 type ArimaFSM struct {
@@ -24,7 +25,6 @@ func NewArimaFSM(path string) (*ArimaFSM, error) {
 	opts.SyncWrites = true
 
 	handle, err := badger.Open(opts)
-
 	if err != nil {
 		return nil, err
 	}
