@@ -1,10 +1,11 @@
 package store
 
 import (
+	"log"
+
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
 	"github.com/rohankmr414/arima/utils"
-	"log"
 )
 
 type LogStore struct {
@@ -18,7 +19,6 @@ func NewLogStore(path string) (*LogStore, error) {
 	opts.SyncWrites = true
 
 	handle, err := badger.Open(opts)
-
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,6 @@ func (store *LogStore) FirstIndex() (uint64, error) {
 
 		return nil
 	})
-
 	if err != nil {
 		log.Fatalf("Error getting first index: %v", err)
 		return 0, err
@@ -78,7 +77,6 @@ func (store *LogStore) LastIndex() (uint64, error) {
 
 		return nil
 	})
-
 	if err != nil {
 		log.Fatalf("Error getting last index: %v", err)
 		return 0, err
@@ -99,7 +97,6 @@ func (store *LogStore) GetLog(index uint64, log *raft.Log) error {
 		value, err = item.ValueCopy(value)
 		return err
 	})
-
 	if err != nil {
 		return err
 	}

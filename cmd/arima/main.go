@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"time"
+
+	"github.com/urfave/cli/v2"
 )
 
 // configRaft configuration for raft node
@@ -39,10 +40,12 @@ const (
 	raftSnapShotRetain = 2
 )
 
-var svport string
-var raftport string
-var nodeid string
-var volumedir string
+var (
+	svport    string
+	raftport  string
+	nodeid    string
+	volumedir string
+)
 
 func main() {
 	app := &cli.App{

@@ -20,7 +20,6 @@ func NewStableStore(path string) (*StableStore, error) {
 	opts.SyncWrites = true
 
 	handle, err := badger.Open(opts)
-
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +53,6 @@ func (store *StableStore) Get(key []byte) ([]byte, error) {
 		value, err = item.ValueCopy(value)
 		return err
 	})
-
 	if err != nil {
 		val := []byte{}
 		return val, err

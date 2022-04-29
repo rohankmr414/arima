@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/binary"
+
 	"github.com/hashicorp/go-msgpack/codec"
 )
 

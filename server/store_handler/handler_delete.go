@@ -3,19 +3,20 @@ package store_handler
 import (
 	// "encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
 	"github.com/rohankmr414/arima/fsm"
 	"github.com/rohankmr414/arima/utils"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // Delete handling remove data from raft cluster. Delete will invoke raft.Apply to make this deleted in all cluster
 // with acknowledge from n quorum. Delete must be done in raft leader, otherwise return error.
 func (h handler) Delete(eCtx echo.Context) error {
-	var key = strings.TrimSpace(eCtx.Param("key"))
+	key := strings.TrimSpace(eCtx.Param("key"))
 	if key == "" {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": "key is empty",
