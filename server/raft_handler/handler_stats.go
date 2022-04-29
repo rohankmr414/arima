@@ -1,8 +1,9 @@
 package raft_handler
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 // StatsRaftHandler get raft status

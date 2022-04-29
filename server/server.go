@@ -1,15 +1,16 @@
 package server
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+	"time"
+
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rohankmr414/arima/server/raft_handler"
 	"github.com/rohankmr414/arima/server/store_handler"
-	"net/http"
-	_ "net/http/pprof"
-	"time"
 )
 
 // srv struct handling server

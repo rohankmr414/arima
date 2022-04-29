@@ -2,22 +2,23 @@ package store_handler
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
+
+	"github.com/labstack/echo/v4"
 )
 
 // Get will fetched data from badgerDB where the raft use to store data.
 // It can be done in any raft server, making the Get returned eventual consistency on read.
 func (h handler) Get(eCtx echo.Context) error {
-	var key = strings.TrimSpace(eCtx.Param("key"))
+	key := strings.TrimSpace(eCtx.Param("key"))
 	if key == "" {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": "key is empty",
 		})
 	}
 
-	var keyByte = []byte(key)
+	keyByte := []byte(key)
 
 	txn := h.db.NewTransaction(false)
 	defer func() {
@@ -31,7 +32,7 @@ func (h handler) Get(eCtx echo.Context) error {
 		})
 	}
 
-	var value = make([]byte, 0)
+	value := make([]byte, 0)
 	err = item.Value(func(val []byte) error {
 		value = append(value, val...)
 		return nil

@@ -2,9 +2,10 @@ package raft_handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/hashicorp/raft"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 // requestJoin request payload for joining raft cluster
@@ -15,7 +16,7 @@ type requestJoin struct {
 
 // JoinRaftHandler handling join raft
 func (h handler) JoinRaftHandler(eCtx echo.Context) error {
-	var form = requestJoin{}
+	form := requestJoin{}
 	if err := eCtx.Bind(&form); err != nil {
 		return eCtx.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": fmt.Sprintf("error binding: %s", err.Error()),
