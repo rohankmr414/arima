@@ -1,6 +1,7 @@
 package fsm
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/dgraph-io/badger/v3"
@@ -17,14 +18,14 @@ func (snap *ArimaSnapshot) Persist(sink raft.SnapshotSink) error {
 	log.Println("Persisting snapshot")
 	_, err := snap.Conn.Backup(sink, 0)
 	if err != nil {
-		log.Fatalln("Error persisting snapshot:", err)
-		return err
+		return fmt.Errorf("error persisting snapshot: %s", err)
+
 	}
 
 	err = sink.Close()
 	if err != nil {
-		log.Fatalln("Error closing snapshot:", err)
-		return err
+		return fmt.Errorf("error closing snapshot: %s", err)
+
 	}
 	return nil
 }

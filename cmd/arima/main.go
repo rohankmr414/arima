@@ -96,7 +96,6 @@ func main() {
 					fmt.Println("Starting arima")
 					err := startNode(svport, raftport, nodeid, volumedir)
 					if err != nil {
-						log.Fatal(err)
 						return err
 					}
 					return nil
