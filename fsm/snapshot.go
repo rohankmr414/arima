@@ -19,13 +19,11 @@ func (snap *ArimaSnapshot) Persist(sink raft.SnapshotSink) error {
 	_, err := snap.Conn.Backup(sink, 0)
 	if err != nil {
 		return fmt.Errorf("error persisting snapshot: %s", err)
-
 	}
 
 	err = sink.Close()
 	if err != nil {
 		return fmt.Errorf("error closing snapshot: %s", err)
-
 	}
 	return nil
 }
