@@ -59,8 +59,7 @@ func (fsm *ArimaFSM) Apply(log *raft.Log) interface{} {
 	// 	return err
 	// }
 	// return nil
-	switch log.Type {
-	case raft.LogCommand:
+	if log.Type == raft.LogCommand {
 		var payload CommandPayload
 		if err := utils.DecodeMsgPack(log.Data, &payload); err != nil {
 			return err
