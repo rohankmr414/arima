@@ -92,7 +92,7 @@ $ arima run --server-port 2221 --node-id n1 --raft-port 1111 --volume-dir /tmp/a
     --header 'Content-Type: application/json' \
     --data-raw '{
         "node_id": "n3", 
-        "raft_address": "127.0.0.2:1113"
+        "raft_address": "127.0.0.1:1113"
     }'
     ```
     Then, check each of this endpoint, it will return the status that the port 2221 is now the only leader and the other is just a follower:
@@ -156,3 +156,23 @@ Each node exposes following endpoints:
         }
         ```
 
+## Removing a node
+
+* URL: `/raft/remove`
+    * Method: `POST`
+    * Request:
+        ```json
+        {
+            "node_id": "n1",
+            "raft_address": "127.0.0.1:1111"
+        }
+        ```
+    * Response: `200`
+        ```
+        {
+            "data":{
+                ...node stats,
+            },
+            "message":"node n1 removed successfully"
+        }
+        ```
