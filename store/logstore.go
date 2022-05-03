@@ -1,7 +1,7 @@
 package store
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/dgraph-io/badger/v3"
 	"github.com/hashicorp/raft"
@@ -49,8 +49,7 @@ func (store *LogStore) FirstIndex() (uint64, error) {
 		return nil
 	})
 	if err != nil {
-		log.Fatalf("Error getting first index: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("error getting first index: %v", err)
 	}
 
 	return key, nil
@@ -78,8 +77,7 @@ func (store *LogStore) LastIndex() (uint64, error) {
 		return nil
 	})
 	if err != nil {
-		log.Fatalf("Error getting last index: %v", err)
-		return 0, err
+		return 0, fmt.Errorf("error getting last index: %v", err)
 	}
 
 	return key, nil
@@ -155,8 +153,7 @@ func (store *LogStore) DeleteRange(min, max uint64) error {
 		it.Next()
 	}
 	if err := txn.Commit(); err != nil {
-		log.Fatalf("Error deleting range: %v", err)
-		return err
+		return fmt.Errorf("error deleting range: %v", err)
 	}
 	return nil
 }

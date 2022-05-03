@@ -17,13 +17,11 @@ import (
 func startNode(svport, raftport, nodeid, volumedir string) error {
 	serverPort, err := strconv.Atoi(svport)
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 
 	raftPort, err := strconv.Atoi(raftport)
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 
@@ -47,43 +45,36 @@ func startNode(svport, raftport, nodeid, volumedir string) error {
 
 	arimaFsm, err := fsm.NewArimaFSM(conf.Raft.VolumeDir)
 	if err != nil {
-		log.Fatalln(err)
 		return err
 	}
 
 	arimaLogStore, err := store.NewLogStore(filepath.Join(conf.Raft.VolumeDir, "log"))
 	if err != nil {
-		log.Fatalln(err)
 		return err
 	}
 
 	arimaStableStore, err := store.NewStableStore(filepath.Join(conf.Raft.VolumeDir, "stable"))
 	if err != nil {
-		log.Fatalln(err)
 		return err
 	}
 
 	arimaSnapshotStore, err := raft.NewFileSnapshotStore(conf.Raft.VolumeDir, raftSnapShotRetain, os.Stdout)
 	if err != nil {
-		log.Fatalln(err)
 		return err
 	}
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp", raftBindAddr)
 	if err != nil {
-		log.Fatalln("Error resolving TCP address:", err)
-		return err
+		return fmt.Errorf("error resolving TCP address: %s", err)
 	}
 
 	transport, err := raft.NewTCPTransport(raftBindAddr, tcpAddr, maxPool, tcpTimeout, os.Stdout)
 	if err != nil {
-		log.Fatalln("Error creating TCP transport:", err)
-		return err
+		return fmt.Errorf("error creating TCP transport: %s", err)
 	}
 
 	raftServer, err := raft.NewRaft(raftConf, arimaFsm, arimaLogStore, arimaStableStore, arimaSnapshotStore, transport)
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 
@@ -100,9 +91,8 @@ func startNode(svport, raftport, nodeid, volumedir string) error {
 	raftServer.BootstrapCluster(configuration)
 
 	srv := server.New(fmt.Sprintf(":%d", conf.Server.Port), arimaFsm.Conn, raftServer)
-	if err := srv.Start(); err != nil {
-		log.Fatalln("failed to start server:", err)
-		return err
+	if err = srv.Start(); err != nil {
+		return fmt.Errorf("failed to start server: %s", err)
 	}
 
 	return nil
